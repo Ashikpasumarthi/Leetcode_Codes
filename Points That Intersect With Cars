@@ -1,0 +1,25 @@
+var numberOfPoints = function(nums) {
+    nums.sort((a,b)=>a[0]-b[0]);
+    let ans = []
+    let startA = nums[0][0] , endA = nums[0][1] , startB , endB;
+
+    for(let i = 1;i<nums.length;i++){
+        startB = nums[i][0];
+        endB = nums[i][1];
+        if(startB<=endA){
+            startA = Math.min(startA,startB);
+            endA = Math.max(endA,endB);
+        }
+        else{
+            ans.push([startA,endA]);
+            startA = startB;
+            endA = endB;
+        }
+    }
+    ans.push([startA,endA]);
+    let totalPoints = 0;
+    for (let interval of ans) {
+        totalPoints += (interval[1] - interval[0] + 1);
+    }
+    return totalPoints
+};
