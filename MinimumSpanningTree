@@ -1,0 +1,99 @@
+class Solution {
+    constructor(){
+        this.minHeap = [];
+    }
+    
+    getParent(index){
+        return Math.floor((index-1)/2);
+    }
+    
+    getLeftChild(index){
+        return 2 * index + 1;
+        
+    }
+    
+    getRightChild(index){
+        return 2 * index + 2;
+    }
+    
+    add(value){
+        this.minHeap.push(value);
+        this.heapifyUp(this.minHeap.length - 1);
+    }
+
+    heapifyUp(index){
+        let parent = this.getParent(index);
+        while (parent >= 0 && this.minHeap[parent][0] > this.minHeap[index][0]) {
+            [this.minHeap[parent], this.minHeap[index]] = [this.minHeap[index], this.minHeap[parent]];
+            index = parent;
+            parent = this.getParent(index);
+        }
+    }
+
+    heapifyDown(index){
+        let smallest = index;
+        let left = this.getLeftChild(index);
+        let right = this.getRightChild(index);
+
+        if (left < this.minHeap.length && this.minHeap[left][0] < this.minHeap[smallest][0]) {
+            smallest = left;
+        }
+
+        if (right < this.minHeap.length && this.minHeap[right][0] < this.minHeap[smallest][0]) {
+            smallest = right;
+        }
+
+        if (smallest !== index) {
+            [this.minHeap[smallest], this.minHeap[index]] = [this.minHeap[index], this.minHeap[smallest]];
+            this.heapifyDown(smallest);
+        }
+    }
+
+    extractMin(){
+        if (this.minHeap.length === 0) return null;
+        if (this.minHeap.length === 1) return this.minHeap.pop();
+
+        const min = this.minHeap[0];
+        this.minHeap[0] = this.minHeap.pop();
+        this.heapifyDown(0);
+        return min;
+    }
+
+    size(){
+        return this.minHeap.length;
+    }
+    
+    spanningTree(v, adj) {
+    let sum = 0;
+    let visited = new Array(v).fill(false);
+    let heap = new Solution();
+    heap.add([0, 0, -1]);
+
+    let adjList = new Array(v).fill(0).map(() => []);
+
+    for (let edge of adj) {
+        let src = edge[0];
+        let dest = edge[1];
+        let wt = edge[2];
+        adjList[src].push([dest, wt]);
+        adjList[dest].push([src, wt]);
+    }
+
+    let verticesVisited = 0;
+    while (heap.size() > 0 && verticesVisited < v) {
+        let [wt, node, parent] = heap.extractMin();
+        if (visited[node]) continue;
+        visited[node] = true;
+        if (parent !== -1) sum += wt;
+        verticesVisited++;
+
+        for (let [nbr, weight] of adjList[node]) {
+            if (!visited[nbr]) {
+                heap.add([weight, nbr, node]);
+            }
+        }
+    }
+
+    return sum;
+}
+    }
